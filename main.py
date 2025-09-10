@@ -3,7 +3,7 @@ import dotenv
 from llama_index.llms.openai import OpenAI
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core import Settings
-from document_storing import getdoc, loading_storage
+from services import document_storing, tools, ReAct_agent
 
 dotenv.load_dotenv()
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
@@ -20,9 +20,9 @@ Settings.embed_model = OpenAIEmbedding(
 
 
 
-
-
  
 if __name__ == "__main__":
-    getdoc()
-    loading_storage()
+    document_storing.getdoc()
+    engine_dict = document_storing.loading_storage()
+
+    tools_dict = tools.get_tools(engine_dict)
