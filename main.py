@@ -1,9 +1,14 @@
 import os
 import dotenv
+import shutil
+import asyncio
 from llama_index.llms.openai import OpenAI
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core import Settings
-from services import document_storing, tools, ReAct_agent
+from services import tools
+from services.document_storing import DocumentStoring 
+from services.ReAct_agent import AgentResponse
+from utils.all_prints import log_message
 
 dotenv.load_dotenv()
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
@@ -21,8 +26,29 @@ Settings.embed_model = OpenAIEmbedding(
 
 
  
-if __name__ == "__main__":
-    document_storing.getdoc()
-    engine_dict = document_storing.loading_storage()
 
-    tools_dict = tools.get_tools(engine_dict)
+
+if __name__ == "__main__":
+
+    async def main():
+        # delete storage folder if exists
+        if os.path.exists("storage"): shutil.rmtree("storage")
+        
+        docs_serv = DocumentStoring()
+        agents_serv = AgentResponse()
+        
+        engine_dict = docs_serv.loading_storage()
+        log_message(engine_dict)
+        
+        tool_list = tools.get_tools(engine_dict)
+        log_message(tool_list)
+        
+        agent = None
+        if not agent: agent = agents_serv.define_agent(tool_list)
+        log_message(agent)
+            
+        question = "What was the revenue of Nvidia in 2024? Comapre this value to 2023 revnue?"
+        response = await agents_serv.call_agent(agent, question)
+        log_message(response)
+
+    asyncio.run(main())
