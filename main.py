@@ -44,11 +44,11 @@ if __name__ == "__main__":
         log_message(tool_list)
         
         agent = None
-        if not agent: agent = agents_serv.define_agent(tool_list)
+        if not agent: agent, context = agents_serv.define_agent_n_context(tool_list)
         log_message(agent)
             
         question = "What was the revenue of Nvidia in 2024? Comapre this value to 2023 revnue?"
-        response = await agents_serv.call_agent(agent, question)
+        response = await agents_serv.call_agent(agent, context, question)
         log_message(response)
 
     asyncio.run(main())

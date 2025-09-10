@@ -9,26 +9,33 @@ os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 class AgentResponse():
     
-    def define_agent(self, input_tools):
-        try:
-            return ReActAgent(
+    def define_agent_n_context(self, input_tools):
+        try:  
+            agent = ReActAgent(
                 tools = input_tools,
                 llm = OpenAI(model="gpt-4o-mini")
             )
+            ctx = Context(agent)
+            return agent, ctx
+        # .
         except Exception as e:
             print_error(e, "Error defining the agent")
 
 
-    async def call_agent(self, agent: ReActAgent, question: str):
+    async def call_agent(self, agent: ReActAgent, ctx: Context, question: str):
         try:
             handler = agent.run(
                 user_msg=question,
-                ctx = Context(agent)
+                ctx = ctx
             )
             async for event in handler.stream_events():
+                log_message(1001)
+                
                 if isinstance(event, AgentStream):
                     # print(f"\n----{event}", end="", flush=True)
-                    print(f"\n----{event.delta}", end="", flush=True)
+                    print(f"{event.delta}", end="", flush=True)
+                    
+                log_message(1002)
             return (await handler)
         except Exception as e:
             print_error(e, "Error calling the agent")
