@@ -28,14 +28,14 @@ class AgentResponse():
                 user_msg=question,
                 ctx = ctx
             )
+            log_message(1001)
+            
             async for event in handler.stream_events():
-                log_message(1001)
-                
                 if isinstance(event, AgentStream):
                     # print(f"\n----{event}", end="", flush=True)
                     print(f"{event.delta}", end="", flush=True)
-                    
-                log_message(1002)
+            
+            log_message(1002)
             return (await handler)
         except Exception as e:
             print_error(e, "Error calling the agent")

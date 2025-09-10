@@ -25,9 +25,6 @@ Settings.embed_model = OpenAIEmbedding(
 
 
 
- 
-
-
 if __name__ == "__main__":
 
     async def main():
@@ -47,8 +44,11 @@ if __name__ == "__main__":
         if not agent: agent, context = agents_serv.define_agent_n_context(tool_list)
         log_message(agent)
             
-        question = "What was the revenue of Nvidia in 2024? Comapre this value to 2023 revnue?"
-        response = await agents_serv.call_agent(agent, context, question)
+        qa1 = "What was the revenue of Nvidia in 2024? Comapre this value to 2023 revnue?"
+        qa2 = "What was the revenue of Apple in 2024? Comapre it to Nvidia's revenue?"
+        
+        response = await agents_serv.call_agent(agent, context, qa1+qa2)
         log_message(response)
+        
 
     asyncio.run(main())
